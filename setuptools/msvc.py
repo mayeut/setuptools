@@ -151,13 +151,12 @@ def _msvc14_find_vc2015():
             access=winreg.KEY_READ | winreg.KEY_WOW64_32KEY
         )
     except OSError:
-        #log.debug("Visual C++ is not registered")
         return None, None
 
     best_version = 0
     best_dir = None
     with key:
-        for i in count():
+        for i in itertools.count():
             try:
                 v, vc_dir, vt = winreg.EnumValue(key, i)
             except OSError:
@@ -206,10 +205,10 @@ def _msvc14_find_vc2017():
 
 
 PLAT_SPEC_TO_RUNTIME = {
-    'x86' : 'x86',
-    'x86_amd64' : 'x64',
-    'x86_arm' : 'arm',
-    'x86_arm64' : 'arm64'
+    'x86': 'x86',
+    'x86_amd64': 'x64',
+    'x86_arm': 'arm',
+    'x86_arm64': 'arm64'
 }
 
 
@@ -224,7 +223,8 @@ def _msvc14_find_vcvarsall(plat_spec):
 
     if best_dir:
         vcredist = join(best_dir, "..", "..", "redist", "MSVC", "**",
-            vcruntime_plat, "Microsoft.VC14*.CRT", "vcruntime140.dll")
+                        vcruntime_plat, "Microsoft.VC14*.CRT",
+                        "vcruntime140.dll")
         try:
             import glob
             vcruntime = glob.glob(vcredist, recursive=True)[-1]
@@ -235,19 +235,16 @@ def _msvc14_find_vcvarsall(plat_spec):
         best_version, best_dir = _msvc14_find_vc2015()
         if best_version:
             vcruntime = join(best_dir, 'redist', vcruntime_plat,
-                "Microsoft.VC140.CRT", "vcruntime140.dll")
+                             "Microsoft.VC140.CRT", "vcruntime140.dll")
 
     if not best_dir:
-        #log.debug("No suitable Visual C++ version found")
         return None, None
 
     vcvarsall = join(best_dir, "vcvarsall.bat")
     if not isfile(vcvarsall):
-        #log.debug("%s cannot be found", vcvarsall)
         return None, None
 
     if not vcruntime or not isfile(vcruntime):
-        #log.debug("%s cannot be found", vcruntime)
         vcruntime = None
 
     return vcvarsall, vcruntime
@@ -262,7 +259,9 @@ def _msvc14_get_vc_env(plat_spec):
 
     vcvarsall, vcruntime = _msvc14_find_vcvarsall(plat_spec)
     if not vcvarsall:
-        raise distutils.errors.DistutilsPlatformError("Unable to find vcvarsall.bat")
+        raise distutils.errors.DistutilsPlatformError(
+            "Unable to find vcvarsall.bat"
+        )
 
     try:
         out = subprocess.check_output(
@@ -270,9 +269,9 @@ def _msvc14_get_vc_env(plat_spec):
             stderr=subprocess.STDOUT,
         ).decode('utf-16le', errors='replace')
     except subprocess.CalledProcessError as exc:
-        #log.error(exc.output)
-        raise distutils.errors.DistutilsPlatformError("Error executing {}"
-                .format(exc.cmd))
+        raise distutils.errors.DistutilsPlatformError(
+            "Error executing {}".format(exc.cmd)
+        )
 
     env = {
         key.lower(): value
