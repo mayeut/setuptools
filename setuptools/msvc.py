@@ -120,7 +120,7 @@ def _msvc14_find_vc2015():
     best_version = 0
     best_dir = None
     with key:
-        for i in itertools.count():
+        for i in count():
             try:
                 v, vc_dir, vt = winreg.EnumValue(key, i)
             except OSError:
