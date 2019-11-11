@@ -120,7 +120,7 @@ def _msvc14_find_vc2015():
     best_version = 0
     best_dir = None
     with key:
-        for i in count():
+        for i in itertools.count():
             try:
                 v, vc_dir, vt = winreg.EnumValue(key, i)
             except OSError:
@@ -190,7 +190,8 @@ def _msvc14_find_vcvarsall(plat_spec):
 
     if best_dir:
         vcredist = join(best_dir, "..", "..", "redist", "MSVC", "**",
-            vcruntime_plat, "Microsoft.VC14*.CRT", "vcruntime140.dll")
+                        vcruntime_plat, "Microsoft.VC14*.CRT",
+                        "vcruntime140.dll")
         try:
             import glob
             vcruntime = glob.glob(vcredist, recursive=True)[-1]
@@ -201,7 +202,7 @@ def _msvc14_find_vcvarsall(plat_spec):
         best_version, best_dir = _msvc14_find_vc2015()
         if best_version:
             vcruntime = join(best_dir, 'redist', vcruntime_plat,
-                "Microsoft.VC140.CRT", "vcruntime140.dll")
+                             "Microsoft.VC140.CRT", "vcruntime140.dll")
 
     if not best_dir:
         return None, None
@@ -227,7 +228,8 @@ def _msvc14_get_vc_env(plat_spec):
     vcvarsall, vcruntime = _msvc14_find_vcvarsall(plat_spec)
     if not vcvarsall:
         raise distutils.errors.DistutilsPlatformError(
-            "Unable to find vcvarsall.bat")
+            "Unable to find vcvarsall.bat"
+        )
 
     try:
         out = subprocess.check_output(
@@ -236,7 +238,8 @@ def _msvc14_get_vc_env(plat_spec):
         ).decode('utf-16le', errors='replace')
     except subprocess.CalledProcessError as exc:
         raise distutils.errors.DistutilsPlatformError(
-            "Error executing {}".format(exc.cmd))
+            "Error executing {}".format(exc.cmd)
+        )
 
     env = {
         key.lower(): value
