@@ -144,6 +144,7 @@ def msvc9_query_vcvarsall(ver, arch='x86', *args, **kwargs):
 
 
 def _msvc14_find_vc2015():
+    """Python 3.8 "distutils/_msvccompiler.py" backport"""
     try:
         key = winreg.OpenKeyEx(
             winreg.HKEY_LOCAL_MACHINE,
@@ -172,7 +173,9 @@ def _msvc14_find_vc2015():
 
 
 def _msvc14_find_vc2017():
-    """Returns "15, path" based on the result of invoking vswhere.exe
+    """Python 3.8 "distutils/_msvccompiler.py" backport
+
+    Returns "15, path" based on the result of invoking vswhere.exe
     If no install is found, returns "None, None"
 
     The version is returned to avoid unnecessarily changing the function
@@ -213,6 +216,7 @@ PLAT_SPEC_TO_RUNTIME = {
 
 
 def _msvc14_find_vcvarsall(plat_spec):
+    """Python 3.8 "distutils/_msvccompiler.py" backport"""
     _, best_dir = _msvc14_find_vc2017()
     vcruntime = None
 
@@ -251,6 +255,7 @@ def _msvc14_find_vcvarsall(plat_spec):
 
 
 def _msvc14_get_vc_env(plat_spec):
+    """Python 3.8 "distutils/_msvccompiler.py" backport"""
     if "DISTUTILS_USE_SDK" in environ:
         return {
             key.lower(): value
